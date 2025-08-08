@@ -1,4 +1,4 @@
-name: Build APK (with Docker)
+name: Build APK (Docker fixed)
 
 on:
   push:
@@ -13,7 +13,12 @@ jobs:
     - name: Checkout source
       uses: actions/checkout@v3
 
-    - name: Set up Docker Buildozer
+    - name: Disable BuildKit and pull Buildozer Docker
+      run: |
+        export DOCKER_BUILDKIT=0
+        docker pull kivy/buildozer
+
+    - name: Run Buildozer in Docker
       run: |
         docker run --rm \
           -v "$PWD":/app \
