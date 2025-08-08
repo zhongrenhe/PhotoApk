@@ -1,4 +1,4 @@
-name: Build APK (No Docker)
+name: Build APK (Nzo Docker)
 
 on:
   push:
