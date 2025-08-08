@@ -1,4 +1,4 @@
-name: Build APK (Docker fixed)
+name: Build APK (No Docker)
 
 on:
   push:
@@ -7,24 +7,35 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
-    - name: Checkout source
+    - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Disable BuildKit and pull Buildozer Docker
+    - name: Install system dependencies
       run: |
-        export DOCKER_BUILDKIT=0
-        docker pull kivy/buildozer
+        sudo apt update
+        sudo apt install -y \
+          zip unzip git \
+          python3-pip python3-setuptools python3-wheel \
+          openjdk-17-jdk \
+          build-essential ccache \
+          libncurses5 libncurses5-dev \
+          libstdc++6 \
+          zlib1g zlib1g-dev \
+          libffi-dev libssl-dev
 
-    - name: Run Buildozer in Docker
+    - name: Install Python dependencies
       run: |
-        docker run --rm \
-          -v "$PWD":/app \
-          -w /app \
-          kivy/buildozer \
-          buildozer android debug
+        pip install --upgrade pip
+        pip install cython
+        pip install buildozer
+        pip install Aidl
+
+    - name: Build APK
+      run: |
+        buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
