@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK (with Docker)
 
 on:
   push:
@@ -8,38 +8,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
+    - name: Checkout source
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-
-    - name: Install system dependencies
+    - name: Set up Docker Buildozer
       run: |
-        sudo apt update
-        sudo apt install -y \
-          build-essential \
-          git zip unzip \
-          openjdk-17-jdk \
-          python3-pip python3-setuptools python3-wheel \
-          libssl-dev libffi-dev \
-          libz-dev zlib1g-dev \
-          libsqlite3-dev libgdbm-dev libbz2-dev libreadline-dev \
-          autoconf automake cmake pkg-config \
-          curl wget
-
-    - name: Install Python dependencies
-      run: |
-        pip install --upgrade pip
-        pip install cython
-        pip install buildozer
-
-    - name: Build APK
-      run: |
-        buildozer android debug
+        docker run --rm \
+          -v "$PWD":/app \
+          -w /app \
+          kivy/buildozer \
+          buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
