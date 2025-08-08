@@ -33,4 +33,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: photo-cleaner-apk
+
         path: bin/*.apk
